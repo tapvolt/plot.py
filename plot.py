@@ -1,6 +1,7 @@
 import argparse
 import serial
 import sys
+import time
 
 
 # Credit to Dhananjay Balan https://blog.dbalan.in/blog/2019/02/23/resurracting-an-hp-7440a-plotter/index.html
@@ -18,6 +19,8 @@ def stitch(hpgl_string, buffer_length=1000):
     """
     count = 0
     buffer = []
+    # always end with the pen up
+    hpgl_string = hpgl_string + "PU;"
     instructions = transform_pen_down_commands(hpgl_string.split(";"))
 
     for ins in instructions:
@@ -82,8 +85,10 @@ def parse():
 
 def main():
     args = parse()
+    print("Started plot: {}".format(time.ctime()))
     hpgl_string = read_file(args.file)
     exec_hpgl(hpgl_string, args.port)
+    print("Ended plot: {}".format(time.ctime()))
 
 
 if __name__ == "__main__":
